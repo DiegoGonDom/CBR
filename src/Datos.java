@@ -9,10 +9,10 @@ public class Datos {
 	public static final String SEPARADOR = ";";
 	
 	public Datos() {
-		String datos = "/Datos.csv";
-		String datosPresiones = "/Presiones.csv";
-		String datosSf = "/SF36.csv"; //Hay un error en el archivo: hay un espacio que se debe eliminar
-		String datosEvas = "/EVAs.csv";
+		String datos = "Datos.csv";
+		String datosPresiones = "Presiones.csv";
+		String datosSf = "SF36.csv"; //Hay un error en el archivo: hay un espacio que se debe eliminar
+		String datosEvas = "EVAs.csv";
         String linea = "";
 
         try (BufferedReader br = new BufferedReader(new FileReader(datos))) {

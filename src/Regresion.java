@@ -248,13 +248,11 @@ public class Regresion {
 		int l = 0, m = 0;
 		for (int i = 0; i < rep; i++)
 			if (datos[i*variables] != -100) {
-				System.out.println(" " + i*variables + " " + datos[i*variables] + " " + x_objetivo.length + " " + x_origen.length);
 				x_origen[l] = i + 1;
 				for (int j = 0; j < variables; j++)
 					datos_origen[j][l] = datos[i*variables + j];
 				l++;
 			} else {
-				System.out.println(" " + i*variables  + " " + datos[i*variables] + " " + x_objetivo.length + " " + x_origen.length);	
 				x_objetivo[m] = i + 1;
 				m++;
 			}
@@ -266,10 +264,10 @@ public class Regresion {
 			for (int i = 0; i < variables; i++) 			 
 				if (datos[i + j*variables] != -100)
 					datos_salida[i + j*variables] = datos[i + j*variables];
-				else /*
+				else 
 					if (!negativos && nuevos_datos[i][o] < 0)
 						datos_salida[i + j*variables] = 0;
-					else*/
+					else
 						datos_salida[i + j*variables] = nuevos_datos[i][o];
 			if (datos[j*variables] == -100)
 				o++;

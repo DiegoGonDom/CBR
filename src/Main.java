@@ -38,7 +38,6 @@ public class Main {
 		*/
 		
 		Datos d = new Datos();
-		d.completarDatos();
 		Evaluacion.evaluacionMetodos(d);
 		
 						
