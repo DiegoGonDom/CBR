@@ -106,7 +106,7 @@ public class Evaluacion {
 	
 	private static void showResults(double[][][] evaluacion) {
 		for (int j = 1; j <= 3; j++) {
-			System.out.println("(" + j + ")\t  Lin\t  Exp\t Poli\t CBRs1\t CBRs2\t CBRs3\t CBRs5\t CBRc1\t CBRc2\t CBRc3\t CBRc5\tCBRcs1\tCBRcs2\tCBRcs3\tCBRcs5");
+			System.out.println("(" + j + ")\tLin\tExp\tPoli\tCBRs1\tCBRs2\tCBRs3\tCBRs5\tCBRc1\tCBRc2\tCBRc3\tCBRc5\tCBRcs1\tCBRcs2\tCBRcs3\tCBRcs5");
 			for (int i = 1; i <= 40; i++) {
 				System.out.print(String.format("%02d",i)+":\t");
 				for (int k = 0; k < 15; k++) {
@@ -123,9 +123,9 @@ public class Evaluacion {
 	
 	private static void exportResults(double[][][] evaluacion, Datos datos) {
 		try{
-		    PrintWriter writer = new PrintWriter("resultados.xls", "UTF-8");
+		    PrintWriter writer = new PrintWriter("resultados.xls", "Cp1252");
 		    for (int j = 1; j <= 3; j++) {
-		    	writer.println("- " + j + " -\tNombre\tLin\tExp\tPoli\tCBRs1\tCBRs2\tCBRs3\tCBRs5\tCBRc1\tCBRc2\tCBRc3\tCBRc5");
+		    	writer.println("- " + j + " -\tNombre\tLin\tExp\tPoli\tCBRs1\tCBRs2\tCBRs3\tCBRs5\tCBRc1\tCBRc2\tCBRc3\tCBRc5\tCBRcs1\tCBRcs2\tCBRcs3\tCBRcs5");
 				for (int i = 1; i <= 40; i++) {
 					writer.print(String.format("%02d",i)+"\t"+datos.getPaciente(i).getNombre()+"\t");
 					for (int k = 0; k < 15; k++) {
