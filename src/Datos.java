@@ -331,4 +331,9 @@ public class Datos {
 			this.lista[i].completarPaciente();
 	}
 	
+	public void completarDatosMedia() {
+		for(int i = 0; i < this.n; i++)
+			this.lista[i].completarPacienteMedia();		
+	}
+	
 }

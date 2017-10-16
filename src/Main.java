@@ -37,8 +37,7 @@ public class Main {
 		}
 		*/
 		
-		Datos d = new Datos();
-		Evaluacion.evaluacionMetodos(d);
+		Evaluacion.evaluacionMetodos();
 		
 						
 	}

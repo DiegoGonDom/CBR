@@ -24,18 +24,8 @@ public class CBR {
 		return similitud;
 	}
 	
-	public static double[] calculoVecinosSimple(Datos datos, int paciente, int tipo) {
-		// tipo: 1 para presiones, 2 para SF36, 3 para EVAs
-		
-		double[] datos_paciente;
+	public static double[] calculoVecinosSimple(Datos datos, double[] datos_paciente, int paciente, int tipo) {
 		double[] datos_vecino;
-		if (tipo == 1)
-			datos_paciente = datos.getPaciente(paciente).getPresiones();
-		else if (tipo == 2)
-			datos_paciente = datos.getPaciente(paciente).getSF();
-		else
-			datos_paciente = datos.getPaciente(paciente).getEVA();
-		
 		double[] similitud = new double[datos.getLista().length];
 		
 		for (int i = 1; i <= similitud.length; i++) {
@@ -54,22 +44,20 @@ public class CBR {
 		return similitud;		
 	}
 	
-	public static double[] calculoVecinosCompleto(Datos datos, int paciente, int tipo, double[] coefs) {
-		// tipo: 1 para presiones, 2 para SF36, 3 para EVAs
-		
-		double[] similitud_simple = calculoVecinosSimple(datos, paciente, tipo);
-		
-		double[] similitud_sexo = new double[datos.getLista().length];
-		double[] similitud_edad = new double[datos.getLista().length];
-		double[] similitud_evaq = new double[datos.getLista().length];
-		double[] similitud_sf = new double[datos.getLista().length];
-		double[] similitud_oswestry = new double[datos.getLista().length];
-		double[] similitud_talla = new double[datos.getLista().length];
-		double[] similitud_peso = new double[datos.getLista().length];
-		double[] similitud_imc = new double[datos.getLista().length];
-		double[] similitud_ep = new double[datos.getLista().length];
-		double[] similitud_flex = new double[datos.getLista().length];
-		double[] similitud = new double[datos.getLista().length];
+	public static double[] calculoVecinosCompleto(Datos datos, double[] datos_paciente, int paciente, int tipo, double[] coefs) {
+		double[] similitud_simple = calculoVecinosSimple(datos, datos_paciente, paciente, tipo);
+		int n = datos.getLista().length;
+		double[] similitud_sexo = new double[n];
+		double[] similitud_edad = new double[n];
+		double[] similitud_evaq = new double[n];
+		double[] similitud_sf = new double[n];
+		double[] similitud_oswestry = new double[n];
+		double[] similitud_talla = new double[n];
+		double[] similitud_peso = new double[n];
+		double[] similitud_imc = new double[n];
+		double[] similitud_ep = new double[n];
+		double[] similitud_flex = new double[n];
+		double[] similitud = new double[n];
 		
 		Paciente p = datos.getPaciente(paciente);
 		for (int i = 1; i <= similitud.length; i++) {
@@ -148,7 +136,7 @@ public class CBR {
 		return max;
 	}
 	
-	public static double[] calculoDatosCBR(Datos datos, int paciente, int tipo, int vecinos, int cbr, double[] coefs) {
+	public static double[] calculoDatosCBR(Datos datos, double[] datos_paciente, int paciente, int tipo, int vecinos, int cbr, double[] coefs) {
 		// datos: lista con los pacientes
 		// paciente: numero del paciente a estudiar
 		// tipo: 1 para presiones, 2 para SF36, 3 para EVAs
@@ -157,29 +145,25 @@ public class CBR {
 		// coefs: pesos relativos de cada elemento de la similitud
 		
 		double[] similitud;
-		if (cbr == 1) //CBR simple
-			similitud = calculoVecinosSimple(datos, paciente, tipo);
-		else
-			similitud = calculoVecinosCompleto(datos, paciente, tipo, coefs);
-		int[] max = new int[vecinos+1];
 		
+		if (cbr == 1) //CBR simple
+			similitud = calculoVecinosSimple(datos, datos_paciente, paciente, tipo);
+		else
+			similitud = calculoVecinosCompleto(datos, datos_paciente, paciente, tipo, coefs);
+		int[] max = new int[vecinos+1];
 		for (int i = 0; i < similitud.length; i++) 
 			max = actualizarMaximo(max, similitud, i);
 		
-		double[] datos_paciente;
 		double[][] datos_vecinos;
 		if (tipo == 1) {
-			datos_paciente = datos.getPaciente(paciente).getPresiones();
 			datos_vecinos = new double[max.length-1][datos_paciente.length];
 			for (int i = 0; i < datos_vecinos.length; i++)
 				datos_vecinos[i] = datos.getPaciente(max[i]).getPresiones();
 		} else if (tipo == 2) {
-			datos_paciente = datos.getPaciente(paciente).getSF();
 			datos_vecinos = new double[max.length-1][datos_paciente.length];
 			for (int i = 0; i < datos_vecinos.length; i++)
 				datos_vecinos[i] = datos.getPaciente(max[i]).getSF();
 		}else {
-			datos_paciente = datos.getPaciente(paciente).getEVA();
 			datos_vecinos = new double[max.length-1][datos_paciente.length];
 			for (int i = 0; i < datos_vecinos.length; i++)
 				datos_vecinos[i] = datos.getPaciente(max[i]).getEVA();

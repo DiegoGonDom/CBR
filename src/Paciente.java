@@ -204,4 +204,38 @@ public class Paciente {
     	this.flex = Regresion.calculoDatosRegresion(this.flex, 1, 2, 30, true);
     }
     
+    public double[] completarMedia(double[] datos, int var, int rep){
+    	double[] resultado = new double[var*rep+1];
+    	for (int i = 0; i < var; i++) {
+    		double media = 0;
+    		int m = 0;
+    		for (int j = 0; j < rep; j++) {
+    			if (datos[var*j + i] != -100) {
+    				media += datos[j];
+    				m++;
+    			}
+    		}
+    		if (m == 0)
+    			media = -100;
+    		else
+    			media /= m;
+    		for (int j = 0; j < rep; j++)
+    			resultado[var*j + i] = media;
+    	}
+    	resultado[var*rep] = 0;
+    	
+    	return resultado;
+    }
+    
+    public void completarPacienteMedia() {
+    	this.evaq = completarMedia(this.evaq, 1, 4);
+    	this.sf = completarMedia(this.sf, 1, 4);
+    	this.oswestry = completarMedia(this.oswestry, 1, 4);
+    	this.talla = completarMedia(this.talla, 1, 4);
+    	this.peso = completarMedia(this.peso, 1, 4);
+    	this.imc = completarMedia(this.imc, 1, 4);
+    	this.ep = completarMedia(this.ep, 1, 3);
+    	this.flex = completarMedia(this.flex, 2, 30);
+    }
+    
 }
