@@ -6,13 +6,12 @@ public class Evaluacion {
 	public Evaluacion() {		
 	}
 	
-	public static void evaluacionMetodos() {
+	public static double[][][] evaluacionMetodos(double[] coefs) {
 		double evaluacion[][][] = new double[40][3][15];
 		Datos datos = new Datos();
 		datos.completarDatos(); // Los datos que faltan se rellenan usando regresión lineal
 		Datos datos2 = new Datos();
 		datos2.completarDatosMedia(); // Los rellenan todos los datos con la media de los datos disponibles
-		double[] coefs = {0.05,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1};
 		
 		for (int i = 1; i <= 40; i++) { // Cada paciente (1-40)
 			Paciente p = datos.getPaciente(i);			
@@ -41,7 +40,7 @@ public class Evaluacion {
 						datos_erroneos = añadirHuecos(datos_analisis, vars);
 						for (int m = 1; m <= 15; m++) { // Tipo de regresion (linear, exponencial, polinomica, CBRs1, CBRs2, CBRs3, CBRs5, CBRc1, CBRc2, CBRc3, CBRc5, CBRcs1, CBRcs2, CBRcs3, CBRcs5)
 							double[] datos_resueltos;
-							// System.out.println(i + " " + j + " " + l + " " + m);							
+						
 							if (m >= 1 && m <= 3) 
 								datos_resueltos = Regresion.calculoDatosRegresion(datos_erroneos, m, vars, reps, false);
 							else if (m >= 4 && m <= 15) {
@@ -68,8 +67,10 @@ public class Evaluacion {
 			}
 		}
 		
-		showResults(evaluacion);	
-		exportResults(evaluacion, datos);
+		//showResults(evaluacion);	
+		//exportResults(evaluacion, datos);
+		
+		return evaluacion;
 	}
 	
 	private static double[] eliminarHuecos(double[] datos) {

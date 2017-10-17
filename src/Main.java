@@ -37,7 +37,13 @@ public class Main {
 		}
 		*/
 		
-		Evaluacion.evaluacionMetodos();
+		/*
+		double[] coefs = {0.05,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1};
+		Evaluacion.evaluacionMetodos(coefs);
+		*/
+		
+		AlGen.lanzaAlgoritmo(1,1);
+		
 		
 						
 	}
