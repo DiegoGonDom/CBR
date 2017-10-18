@@ -73,6 +73,66 @@ public class Evaluacion {
 		return evaluacion;
 	}
 	
+	public static double[] evaluacionMetodos(double[] coefs, int tipo, int modelo) {
+		double evaluacion[] = new double[40];
+		Datos datos = new Datos();
+		datos.completarDatos(); // Los datos que faltan se rellenan usando regresión lineal
+		Datos datos2 = new Datos();
+		datos2.completarDatosMedia(); // Los rellenan todos los datos con la media de los datos disponibles
+		
+		for (int i = 1; i <= 40; i++) { // Cada paciente (1-40)
+			Paciente p = datos.getPaciente(i);			
+			double[] datos_partida;
+			int vars, reps;
+			if (tipo == 1) {
+				datos_partida = p.getPresiones();
+				vars = 5;
+			} else if (tipo == 2) {
+				datos_partida = p.getSF();
+				vars = 9;
+			} else {
+				datos_partida = p.getEVA();
+				vars = 4;
+			}
+			double[] datos_analisis = eliminarHuecos(datos_partida);
+			reps = (datos_analisis.length - 1) / vars;
+				
+			if (datos_analisis.length > 1) {	
+				int N = 100; // Numero de repeticiones
+				double[] datos_erroneos;
+				for (int l = 0; l < N; l++) {
+					datos_erroneos = añadirHuecos(datos_analisis, vars);
+					double[] datos_resueltos;
+					
+					if (modelo >= 1 && modelo <= 3) 
+						datos_resueltos = Regresion.calculoDatosRegresion(datos_erroneos, modelo, vars, reps, false);
+					else if (modelo >= 4 && modelo <= 15) {
+						int v = (modelo) % 4;
+						if (v == 0)
+							v = 5;
+						int cbr = modelo / 4;
+						if (modelo <= 11)
+							datos_resueltos = CBR.calculoDatosCBR(datos, datos_erroneos, i, tipo, v, cbr, coefs);
+						else
+							datos_resueltos = CBR.calculoDatosCBR(datos2, datos_erroneos, i, tipo, v, cbr, coefs);
+					}							
+					else
+						datos_resueltos = new double[datos_analisis.length];
+					evaluacion[i-1] += CBR.similitud(datos_resueltos, datos_analisis);
+				}
+				evaluacion[i-1] /= N;
+			}
+			else 
+				for (int m = 1; m <= 15; m++)
+					evaluacion[i-1] = 0;
+		}
+		
+		//showResults(evaluacion);	
+		//exportResults(evaluacion, datos);
+		
+		return evaluacion;
+	}
+	
 	private static double[] eliminarHuecos(double[] datos) {
 		double[] nuevos_datos = new double[datos.length - (int)datos[datos.length-1]];
 		int i = 0;

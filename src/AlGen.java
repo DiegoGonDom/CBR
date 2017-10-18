@@ -1,45 +1,56 @@
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 public class AlGen {
 	
 	public AlGen() {	
 	}
 	
-	public static double[] generaCoefs() {
-		double[] coefs = new double[11];
+	public static double[] normalizaCoefs(double[] coefs) {
 		double total = 0;
-		for (int i = 0; i < coefs.length; i++) {
-			coefs[i] = Math.random(); // Coeficientes aleatorios
-			total += coefs[i];
-		}
+		double[] resultado = new double [coefs.length];
 		for (int i = 0; i < coefs.length; i++) 
-			coefs[i] /= total; // La suma de los coeficientes debe ser 1
-				
-		return coefs;
+			total += coefs[i];
+		for (int i = 0; i < coefs.length; i++) 
+			resultado[i] = coefs[i] / total; // La suma de los coeficientes debe ser 1
+		
+		return resultado;
 	}
 	
-	public static double evaluaCoefs(int tipo, int modelo, double[][][] evaluacion) {
+	public static double[] generaCoefs(int n) {
+		double[] coefs = new double[n];
+		for (int i = 0; i < coefs.length; i++) 
+			coefs[i] = Math.random(); // Coeficientes aleatorios
+
+		return normalizaCoefs(coefs);
+	}
+	
+	public static double evaluaCoefs(double[] evaluacion) {
 		double resultado;
 		resultado = 0;
-		for(int k = 0; k < 40; k++)
-			resultado += evaluacion[k][tipo][modelo+2];
-		resultado /= 40;
+		for(int k = 0; k < 32; k++)
+			if (k != 26 && k != 8 && k != 6)
+			resultado += evaluacion[k];
+		resultado /= 29;
 
 		return resultado;
 	}
 	
 	public static double[][] seleccionaCoefs(double[][] coefs, double[] evaluacion) {
+		int F = 4; // Factor de selección
 		int N = coefs.length;
 		int M = coefs[0].length;
-		double[][] resultado = new double[N][M];
+		double[][] resultadoS = new double[N][M];
 		double[] ordenados = new double[N];
 		
 		double total = 0;
 		for (int i = 0; i < N; i++) {
-			total += evaluacion[i];
+			total += Math.pow(evaluacion[i], F);
 		}
-		ordenados[0] = evaluacion[0] / total;
+		ordenados[0] =  Math.pow(evaluacion[0], F) / total;
 		for (int i = 1; i < N; i++) 
-			ordenados[i] = ordenados[i-1] + evaluacion[i] / total;	
+			ordenados[i] = ordenados[i-1] + Math.pow(evaluacion[i], F) / total;	
 		
 		for (int i = 0; i < N; i++) {
 			double ran = Math.random();
@@ -47,43 +58,62 @@ public class AlGen {
 			boolean k = true;
 			do  {
 				if (ran <= ordenados[j]) {
-					resultado[i] = coefs[j];
+					resultadoS[i] = coefs[j];
 					k = false;
 				}
 				j++;
 			} while (j < N && k);
 		}
  
-		return resultado;
+		return resultadoS;
 	}
 	
 	public static double[][] cruzaCoefs(double cruce, double[][] coefs) {
+		int n = coefs.length / 2;
 		int N = coefs.length;
 		int M = coefs[0].length;
-		double[][] resultado = new double[N][M];
-		int n = N / 2;
+		double[][] resultadoC = new double[N][M];
 		for (int i = 0; i < n; i++) {
+			resultadoC[2*i] = coefs[2*i];
+			resultadoC[2*i+1] = coefs[2*i+1];
 			double ran = Math.random();
 			if (ran < cruce) {
-				int r = (int)(Math.random()*11);
-				for (int j = r; j < N; j++) {
-					double aux = coefs[i][r];
-					coefs[i][r] = coefs[i+1][r];
-					coefs[i+1][r] = aux;
-				}
+				int r = (int)(Math.random()*M);
+				for (int j = r; j < M; j++) {
+					double aux = resultadoC[2*i][j];
+					resultadoC[2*i][j] = resultadoC[2*i+1][j];
+					resultadoC[2*i+1][j] = aux;
+				}				
 			}
+			resultadoC[2*i] = normalizaCoefs(resultadoC[2*i]);
+			resultadoC[2*i+1] = normalizaCoefs(resultadoC[2*i+1]);
 		}
 		
-		return resultado;
+		return resultadoC;
 	}
 	
 	public static double[][] mutaCoefs(double mutacion, double[][] coefs) {
 		int N = coefs.length;
 		int M = coefs[0].length;
-		double[][] resultado = new double[N][M];
+		double[][] resultadoM = new double[N][M];
 		
+		for (int i = 0; i < N; i++) {
+			resultadoM[i] = coefs[i];
+			double ran = Math.random();			
+			if (ran < mutacion) {
+				int r = (int)(Math.random() * M);				
+				resultadoM[i][r] += 0.05;
+				if (resultadoM[i][r] > 1)
+					resultadoM[i][r] = 1;
+				r = (int)(Math.random() * M);
+				resultadoM[i][r] -= 0.05;
+				if (resultadoM[i][r] < 0)
+					resultadoM[i][r] = 0;				
+			}
+			resultadoM[i] = normalizaCoefs(resultadoM[i]);
+		}
 		
-		return resultado;
+		return resultadoM;
 	}
 		
 	
@@ -91,60 +121,90 @@ public class AlGen {
 		// Tipo: 1=Presiones, 2=SF36, 3=EVAs
 		// Modelo: 1=CBRs1, 2=CBRs2, 3=CBRs3, 4=CBRs5, ... , 12=CBRcs5
 		
-		int N = 10; // Tamaño de la población
-		int G = 100; // Numero de generaciones
-		double[][] coefs = new double[N][11]; // Población
+		int M = 11; // Nº de coeficientes
+		int N = 20; // Tamaño de la población
+		int G = 1000; // Numero de generaciones
+		double cruce = 0.1; // Probabilidad de cruce
+		double mutacion = 0.1; // Probabilidad de mutación
+		double[][] coefs = new double[N][M]; // Población
+		double[][] coefsH = new double[N][M]; // Población nueva
 		for(int i = 0; i < N; i++)  // Inicialización de la población
-    		coefs[i] = generaCoefs();
+    		coefs[i] = generaCoefs(M);
+		//for(int i = 0; i < n; i++)  // Coef perfectos
+    	//	coefs[0][i] = 0;
+		//coefs[0][0] = 1;
 		double[] evaluacion = new double[N]; // Vector que guarda la evaluación de los coeficientes.
-		double eval = 0; // Evaluación promedio de todos los coeficientes de la generación actual
-		double evalAnterior = 0; // Evaluación promedio de todos los coeficientes de la generación anterior
-		double dif = 0; // Diefrencia entre generaciones de las evaluaciones promedio
-		double min = 0.000000; // Minima diferencia entre generaciones
-    	
-		int i = 1;
-		do { // Diferentes generaciones
-			eval = 0;
-			System.out.println("Generación " + i);
-			/*
-			for(int j = 0; j < N; j++) {  // Evaluación 
-				evaluacion[j] = evaluaCoefs(tipo, modelo, Evaluacion.evaluacionMetodos(coefs[j]));
-				eval += evaluacion[j];
-			}*/
-			System.out.print("Eval: ");
-			for(int j = 0; j < N; j++) {  // Evaluación 
-				evaluacion[j] = prueba(coefs[j]);
-				eval += evaluacion[j];
-				System.out.print(evaluacion[j] + " ");
-			}
-			System.out.println(" ");
-			eval /= N;
-			dif = Math.abs(eval - evalAnterior);
-			evalAnterior = eval;
-			
-			coefs = seleccionaCoefs(coefs, evaluacion); // Selección
-			
-			double cruce = 0.25; // Probabilidad de cruce
-			coefs = cruzaCoefs(cruce, coefs); // Cruce
-			
-			double mutacion = 0.1; // Probabilidad de mutación
-			coefs = mutaCoefs(mutacion, coefs); // Mutación
-			
-			i++;
-		} while (i <= G && dif >= min);
+		double eval, evalH; // Evaluación promedio de todos los coeficientes de la generación actual
 		
-		System.out.println(" ");
-		System.out.println("FIN!!!");
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("AlGen.xls", "Cp1252");
+			writer.println("Generacion\tEvaluacion");		
+		
+			int i = 1;
+			do { // Diferentes generaciones
+				eval = 0;
+				System.out.print("Generación " + i + ": ");				
+				for(int j = 0; j < N; j++) {  // Evaluación 
+					evaluacion[j] = evaluaCoefs(Evaluacion.evaluacionMetodos(coefs[j],tipo,modelo));
+					//System.out.print((j+1) + ") ");
+					eval += evaluacion[j];
+					//showCoefs(coefs[j], tipo, modelo);
+				}
+				eval /= N;
+				writer.println(String.format("%d\t%.5f", i, eval));
+				//System.out.println("---------------------------------------------------------------------------------------------------------------------");
+				coefsH = seleccionaCoefs(coefs, evaluacion); // Selección
+				coefsH = cruzaCoefs(cruce, coefsH); // Cruce
+				//coefsH = mutaCoefs(mutacion, coefsH); // Mutación
+				evalH = 0;
+				for(int j = 0; j < N; j++) { // Evaluación 
+					evaluacion[j] = evaluaCoefs(Evaluacion.evaluacionMetodos(coefsH[j],tipo,modelo));
+					//System.out.print((j+1) + ") ");
+					evalH += evaluacion[j];
+					//showCoefs(coefsH[j], tipo, modelo);
+				}
+				evalH /= N;
+				System.out.println(String.format("Eval = %.5f, EvalH = %.5f", eval, evalH));
+				if (evalH > eval) {
+					coefs = coefsH;
+				}
+				//System.out.println(" ");
+				i++;
+			} while (i <= G && eval < 0.99);
+			
+			if (i > G)
+				System.out.println("\nFIN: NO HA CONVERGIDO :C");
+			else 
+				System.out.println("\nFIN : ¡¡ HAY SOLUCION OPTIMA !!");
+			showCoefs(coefs[0], tipo, modelo);
+			
+			writer.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
-	public static double prueba(double[] coefs) {
-		double p = 0;
-		for (int i = 0; i < coefs.length; i++) {
-			p +=  Math.pow(coefs[i], 2);
+	public static double funcCoefs(double[] coefs, int tipo, int modelo) {
+		return evaluaCoefs(Evaluacion.evaluacionMetodos(coefs,tipo,modelo));
+	}
+	
+	public static void showCoefs(double[] coefs, int tipo, int modelo) {
+		double total = 0;
+		for(int i = 0; i < coefs.length; i++) {
+			System.out.print(String.format("%.5f ", coefs[i]));
+			total += coefs[i];
 		}
-		
-		return p;
+		System.out.print(String.format(" =>  %.5f ", funcCoefs(coefs,tipo,modelo)));
+		if (total <= 1.01 && total >= 0.99)
+			System.out.println("(Normalizado)");
+		else
+			System.out.println(String.format("(No válido: %.3f)",total));
 	}
 	
 }
