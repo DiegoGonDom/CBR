@@ -37,6 +37,18 @@ public class AlGen {
 		return resultado;
 	}
 	
+	public static double funcCoefs(double[] coefs, int tipo, int modelo) {
+		/*
+		 * double p = 0;
+		for (int i = 0; i < coefs.length; i++)
+			if (coefs[i] > p)
+				p = coefs[i];
+		return p;
+		*/		
+		
+		return evaluaCoefs(Evaluacion.evaluacionMetodos(coefs,tipo,modelo));		
+	}
+	
 	public static double[][] seleccionaCoefs(double[][] coefs, double[] evaluacion) {
 		int F = 4; // Factor de selección
 		int N = coefs.length;
@@ -123,7 +135,7 @@ public class AlGen {
 		
 		int M = 11; // Nº de coeficientes
 		int N = 20; // Tamaño de la población
-		int G = 1000; // Numero de generaciones
+		int G = 3000; // Numero de generaciones
 		double cruce = 0.1; // Probabilidad de cruce
 		double mutacion = 0.1; // Probabilidad de mutación
 		double[][] coefs = new double[N][M]; // Población
@@ -146,7 +158,7 @@ public class AlGen {
 				eval = 0;
 				System.out.print("Generación " + i + ": ");				
 				for(int j = 0; j < N; j++) {  // Evaluación 
-					evaluacion[j] = evaluaCoefs(Evaluacion.evaluacionMetodos(coefs[j],tipo,modelo));
+					evaluacion[j] = funcCoefs(coefs[j],tipo,modelo);
 					//System.out.print((j+1) + ") ");
 					eval += evaluacion[j];
 					//showCoefs(coefs[j], tipo, modelo);
@@ -156,10 +168,10 @@ public class AlGen {
 				//System.out.println("---------------------------------------------------------------------------------------------------------------------");
 				coefsH = seleccionaCoefs(coefs, evaluacion); // Selección
 				coefsH = cruzaCoefs(cruce, coefsH); // Cruce
-				//coefsH = mutaCoefs(mutacion, coefsH); // Mutación
+				coefsH = mutaCoefs(mutacion, coefsH); // Mutación
 				evalH = 0;
 				for(int j = 0; j < N; j++) { // Evaluación 
-					evaluacion[j] = evaluaCoefs(Evaluacion.evaluacionMetodos(coefsH[j],tipo,modelo));
+					evaluacion[j] = funcCoefs(coefsH[j],tipo,modelo);
 					//System.out.print((j+1) + ") ");
 					evalH += evaluacion[j];
 					//showCoefs(coefsH[j], tipo, modelo);
@@ -188,10 +200,6 @@ public class AlGen {
 			e.printStackTrace();
 		}
 		
-	}
-	
-	public static double funcCoefs(double[] coefs, int tipo, int modelo) {
-		return evaluaCoefs(Evaluacion.evaluacionMetodos(coefs,tipo,modelo));
 	}
 	
 	public static void showCoefs(double[] coefs, int tipo, int modelo) {
