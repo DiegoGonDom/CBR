@@ -39,12 +39,13 @@ public class Main {
 		
 		//System.out.println(String.format("%.5f",Math.random()));
 		
-		AlGen.lanzaAlgoritmo(1,8);
+		//AlGen.lanzaAlgoritmo(1,8);
 		
-		/*
+		
 		double[] coefs = {0.05,0.05,0.05,0.05,0.1,0.05,0.05,0.1,0.1,0.1,0.3};
 		Evaluacion.evaluacionMetodos(coefs);
-		*/
+		
+		
 		
 		
 		

@@ -135,7 +135,7 @@ public class AlGen {
 		
 		int M = 11; // Nº de coeficientes
 		int N = 20; // Tamaño de la población
-		int G = 3000; // Numero de generaciones
+		int G = 10000; // Numero de generaciones
 		double cruce = 0.1; // Probabilidad de cruce
 		double mutacion = 0.1; // Probabilidad de mutación
 		double[][] coefs = new double[N][M]; // Población

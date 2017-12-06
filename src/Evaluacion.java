@@ -67,8 +67,8 @@ public class Evaluacion {
 			}
 		}
 		
-		//showResults(evaluacion);	
-		//exportResults(evaluacion, datos);
+		showResults(evaluacion);	
+		exportResults(evaluacion, datos);
 		
 		return evaluacion;
 	}
@@ -126,9 +126,6 @@ public class Evaluacion {
 				for (int m = 1; m <= 15; m++)
 					evaluacion[i-1] = 0;
 		}
-		
-		//showResults(evaluacion);	
-		//exportResults(evaluacion, datos);
 		
 		return evaluacion;
 	}
